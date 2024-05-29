@@ -1,0 +1,177 @@
+/* Import Inter Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+/* Subtle Scrolling Gradient Background with Inter Font */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(90deg, #f5f5f5, #ffd8b1, #f5f5f5);
+  background-size: 200% 200%;
+  animation: gradientScroll 30s ease infinite;
+  margin: 20px;
+  padding: 20px;
+  border: 2px solid #d3d3d3;
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes gradientScroll {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #333333;
+  border-bottom: 1px solid #d3d3d3;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Minimalist Japanese Inspired Gradients */
+header, footer {
+  background: linear-gradient(90deg, #f5f5f5 0%, #ffd8b1 100%);
+  color: #333333;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+main {
+  background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+  padding: 20px;
+  border-radius: 5px;
+}
+
+pre, code {
+  background-color: #eaeaea;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  color: #333333;
+}
+
+blockquote {
+  background-color: #f9f9f9;
+  border-left: 10px solid #ffd8b1;
+  margin: 20px 0;
+  padding: 10px 20px;
+  color: #555555;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #ffffff;
+  border: 1px solid #d3d3d3;
+}
+
+th, td {
+  border: 1px solid #d3d3d3;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #ffd8b1;
+  color: #333333;
+}
+
+td {
+  background-color: #f5f5f5;
+  color: #333333;
+}
+
+/* Custom Buttons */
+button {
+  background: linear-gradient(90deg, #f5f5f5 0%, #ffd8b1 100%);
+  border: none;
+  color: #333333;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: linear-gradient(90deg, #ffd8b1 0%, #f5f5f5 100%);
+}
+
+/* Styling the Table of Contents */
+#TOC {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border: 2px solid #d3d3d3;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+}
+
+#TOC h2 {
+  font-size: 20px;
+  margin-top: 0;
+  color: #333333;
+  border-bottom: 1px solid #d3d3d3;
+  padding-bottom: 10px;
+  font-family: 'Inter', sans-serif;
+}
+
+#TOC ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#TOC ul li {
+  margin: 10px 0;
+}
+
+#TOC ul li a {
+  color: #333333;
+  text-decoration: none;
+  background: linear-gradient(90deg, #ffd8b1, #f5f5f5);
+  background-size: 200% 200%;
+  transition: background-position 0.5s;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+#TOC ul li a:hover {
+  background-position: 100% 0;
+}
+
+
+/* Styling LaTeX Equations */
+.katex {
+  font-family: 'Inter', sans-serif;
+  background-color: #fff5e6;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+  color: #333333;
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+}
+
+.katex-display {
+  background-color: #fff5e6;
+  padding: 10px;
+  border-radius: 5px;
+  color: #333333;
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.katex .mspace {
+  margin: 0 0.2em;
+}
+
+.katex .mord {
+  color: #333333;
+}

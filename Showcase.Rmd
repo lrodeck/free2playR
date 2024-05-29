@@ -1,0 +1,402 @@
+---
+title: "free2playR Package"
+author: "Lasse Rodeck"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    css: custom.css
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(colorspace)
+library(DiagrammeR)
+library(kableExtra)
+
+ggthemr::ggthemr("pale")
+extrafont::loadfonts(device = "win")
+
+ggthemr::ggthemr("pale")
+```
+
+## **Introduction**
+
+This document demonstrates the use of the MyGamePackage framework for simulating a farming game feature. The player plants, grows, and harvests crops, manages resources, and upgrades farming equipment to improve efficiency.
+
+## **Load MyGamePackage**
+
+```{r load_package, echo=TRUE, message=FALSE, warning=FALSE}
+# Load the package
+library(free2playR)
+```
+
+## **Initialize the User**
+
+Initialize the user with some initial resources and attributes.
+
+```{r initialize_user, echo=TRUE, message=FALSE, warning=FALSE}
+# Initialize the user
+user <- initialize_user(
+  user_id = 1,
+  initial_currency1 = 1000,  # Gold
+  initial_currency2 = 500,   # Water
+  initial_public_order = 50,
+  initial_happiness = 50,
+  initial_xp = 0,
+  initial_level = 1,
+  tech_nodes = c("UpgradeHoe1", "UpgradeHoe2", "UpgradeWateringCan1", "UpgradeWateringCan2")
+)
+user %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## **Define Tech Nodes for Upgrading Equipment**
+
+Define tech nodes for upgrading the farming equipment.
+
+```{r define_tech_nodes, echo=TRUE, message=FALSE, warning=FALSE}
+# Define tech nodes for upgrading equipment
+upgrade_hoe1 <- define_tech_node(
+  node_name = "UpgradeHoe1",
+  cost_currency1 = 100,
+  cost_currency2 = 50,
+  time_required = 2,
+  value = 1,
+  xp_reward = 50
+)
+
+upgrade_hoe2 <- define_tech_node(
+  node_name = "UpgradeHoe2",
+  cost_currency1 = 200,
+  cost_currency2 = 100,
+  time_required = 3,
+  value = 2,
+  xp_reward = 100,
+  prerequisites = "UpgradeHoe1",
+  level_requirement = 2
+)
+
+upgrade_watering_can1 <- define_tech_node(
+  node_name = "UpgradeWateringCan1",
+  cost_currency1 = 150,
+  cost_currency2 = 75,
+  time_required = 2,
+  value = 1,
+  xp_reward = 60
+)
+
+upgrade_watering_can2 <- define_tech_node(
+  node_name = "UpgradeWateringCan2",
+  cost_currency1 = 300,
+  cost_currency2 = 150,
+  time_required = 3,
+  value = 2,
+  xp_reward = 120,
+  prerequisites = "UpgradeWateringCan1",
+  level_requirement = 2
+)
+
+```
+
+## **Define the Tech Tree**
+
+Define the tech tree with the created tech nodes.
+
+```{r define_tech_tree, echo=TRUE}
+# Define the tech tree
+tech_tree <- define_tech_tree(upgrade_hoe1, upgrade_hoe2, upgrade_watering_can1, upgrade_watering_can2)
+tech_tree %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+## **Define Actions for Planting, Growing, and Harvesting Crops**
+
+Define actions for planting, growing, and harvesting crops.
+
+```{r define_actions, echo=TRUE}
+# Define actions for planting, growing, and harvesting crops
+# Define actions for planting, growing, and harvesting crops
+plant_wheat <- define_action(
+  action_name = "PlantWheat",
+  cost_currency1 = 50,  # Cost in gold
+  cost_currency2 = 20,  # Cost in water
+  perceived_value = 5,
+  public_order_change = 1,
+  happiness_change = 1,
+  xp_reward = 30,
+  level_requirement = 1
+)
+
+grow_wheat <- define_action(
+  action_name = "GrowWheat",
+  cost_currency1 = 10,
+  cost_currency2 = 10,
+  perceived_value = 10,
+  public_order_change = 1,
+  happiness_change = 2,
+  xp_reward = 50,
+  level_requirement = 1
+)
+
+harvest_wheat <- define_action(
+  action_name = "HarvestWheat",
+  cost_currency1 = 0,
+  cost_currency2 = 0,
+  perceived_value = 20,
+  public_order_change = 2,
+  happiness_change = 3,
+  xp_reward = 100,
+  level_requirement = 1
+)
+list(plant_wheat, grow_wheat, harvest_wheat) %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## **Define Quests for Completing Farming Tasks**
+
+Define quests for completing farming tasks.
+
+```{r define_quest, echo=TRUE, message=FALSE, warning=FALSE}
+# Define quests for completing farming tasks
+quest_plant_wheat <- define_quest(
+  quest_name = "QuestPlantWheat",
+  requirement = 30,  # XP requirement to complete the quest
+  reward_currency1 = 50,  # Gold reward
+  reward_currency2 = 30,   # Water reward
+  reward_xp = 50
+)
+
+quest_harvest_wheat <- define_quest(
+  quest_name = "QuestHarvestWheat",
+  requirement = 100,
+  reward_currency1 = 100,
+  reward_currency2 = 50,
+  reward_xp = 100
+)
+rbind(quest_plant_wheat, quest_harvest_wheat) %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## **Simulate Actions and Quests**
+
+Simulate the player's actions of planting, growing, and harvesting crops, and completing quests to manage the farm.
+
+```{r simulate_actions, echo=TRUE, message=FALSE, warning=FALSE}
+# Data frame to store user progress for visualization
+progress_df <- tibble(
+  step = integer(),
+  action = character(),
+  currency1 = numeric(),
+  currency2 = numeric(),
+  xp = numeric(),
+  level = numeric(),
+  tech_progress = list()
+)
+
+# Helper function to log progress
+log_progress <- function(step, action_name, user) {
+  progress_df <<- progress_df %>% add_row(
+    step = step,
+    action = action_name,
+    currency1 = user$currency1[1],
+    currency2 = user$currency2[1],
+    xp = user$xp[1],
+    level = user$level[1],
+    tech_progress = list(user$tech_progress[[1]])
+  )
+}
+
+
+# Simulate planting wheat
+user <- simulate_action(user, plant_wheat)
+log_progress(1, "PlantWheat", user)
+
+# Simulate growing wheat
+user <- simulate_action(user, grow_wheat)
+log_progress(2, "GrowWheat", user)
+
+# Simulate harvesting wheat
+user <- simulate_action(user, harvest_wheat)
+log_progress(3, "HarvestWheat", user)
+
+# Simulate upgrading the equipment
+user <- simulate_tech_progression(user, tech_tree)
+log_progress(4, "UpgradeEquipment", user)
+
+# Simulate completing the quest to plant wheat
+user <- complete_quest(user, quest_plant_wheat)
+log_progress(5, "CompleteQuestPlantWheat", user)
+
+# Simulate completing the quest to harvest wheat
+user <- complete_quest(user, quest_harvest_wheat)
+log_progress(6, "CompleteQuestHarvestWheat", user)
+
+# Display progress_df as a formatted HTML table
+progress_df %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+## **Visualize the Results**
+
+Visualize the changes in user attributes like gold, water, XP, and the progress in tech upgrades over time.
+
+```{r visualize_results, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Plot gold and water over time
+p1 <- ggplot(progress_df, aes(x = step)) +
+  geom_line(aes(y = currency1, color = "Gold")) +
+  geom_line(aes(y = currency2, color = "Water")) +
+  labs(title = "Gold and Water Over Time", x = "Step", y = "Amount", color = "Resource") +
+    theme(text = element_text(family = "Inter", colour = "#0C0C0C")
+          , plot.title = element_text(size = 14, face = "bold")
+          , plot.subtitle = element_text(size = 10)
+          , plot.caption = element_text(size = 8)
+          , axis.text = element_text(size = 8)
+          , axis.title = element_text(size = 10)
+          , legend.text = element_text(size = 8)
+          , legend.title = element_text(size = 10, face = "bold")
+          , strip.text = element_text(size = 8, face = "bold")
+          , legend.position = "top"
+          , legend.direction = "horizontal"
+          , legend.justification = "left"
+          , panel.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , plot.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , panel.grid.major = element_line(color = "#F0F0F0") # Set major grid lines to Light Gray
+          , panel.grid.minor = element_blank() # Remove minor grid lines
+          , strip.background = element_rect(fill = "#F8F8FF") # Set facet background color to Ghost White
+          , legend.background = element_rect(fill = "#F8F8FF", color = NA) # Set legend background color to Ghost White
+          , legend.key = element_blank() # Remove legend key
+    )
+
+# Plot XP and level over time
+p2 <- ggplot(progress_df, aes(x = step)) +
+  geom_line(aes(y = xp, color = "XP")) +
+  labs(title = "XP Over Time", x = "Step", y = "XP", color = "Attribute") +
+    theme(text = element_text(family = "Inter", colour = "#0C0C0C")
+          , plot.title = element_text(size = 14, face = "bold")
+          , plot.subtitle = element_text(size = 10)
+          , plot.caption = element_text(size = 8)
+          , axis.text = element_text(size = 8)
+          , axis.title = element_text(size = 10)
+          , legend.text = element_text(size = 8)
+          , legend.title = element_text(size = 10, face = "bold")
+          , strip.text = element_text(size = 8, face = "bold")
+          , legend.position = "top"
+          , legend.direction = "horizontal"
+          , legend.justification = "left"
+          , panel.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , plot.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , panel.grid.major = element_line(color = "#F0F0F0") # Set major grid lines to Light Gray
+          , panel.grid.minor = element_blank() # Remove minor grid lines
+          , strip.background = element_rect(fill = "#F8F8FF") # Set facet background color to Ghost White
+          , legend.background = element_rect(fill = "#F8F8FF", color = NA) # Set legend background color to Ghost White
+          , legend.key = element_blank() # Remove legend key
+    )
+
+# Plot XP and level over time
+p3 <- ggplot(progress_df, aes(x = step)) +
+  geom_line(aes(y = level, color = "Level")) +
+  labs(title = "Level Over Time", x = "Step", y = "Level", color = "Attribute") +
+    theme(text = element_text(family = "Inter", colour = "#0C0C0C")
+          , plot.title = element_text(size = 14, face = "bold")
+          , plot.subtitle = element_text(size = 10)
+          , plot.caption = element_text(size = 8)
+          , axis.text = element_text(size = 8)
+          , axis.title = element_text(size = 10)
+          , legend.text = element_text(size = 8)
+          , legend.title = element_text(size = 10, face = "bold")
+          , strip.text = element_text(size = 8, face = "bold")
+          , legend.position = "top"
+          , legend.direction = "horizontal"
+          , legend.justification = "left"
+          , panel.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , plot.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , panel.grid.major = element_line(color = "#F0F0F0") # Set major grid lines to Light Gray
+          , panel.grid.minor = element_blank() # Remove minor grid lines
+          , strip.background = element_rect(fill = "#F8F8FF") # Set facet background color to Ghost White
+          , legend.background = element_rect(fill = "#F8F8FF", color = NA) # Set legend background color to Ghost White
+          , legend.key = element_blank() # Remove legend key
+    )
+
+gridExtra::grid.arrange(p1,p2,p3)
+
+```
+
+Additionally we can also plot out the actions and the development of user stats.
+
+```{r flow, echo=FALSE, message=FALSE, warning=FALSE}
+# Plot sequence of actions over time
+ggplot(progress_df, aes(x = step, y = currency1, group = 1)) +
+  geom_line() +
+  geom_point() +
+  geom_label(aes(label = action)) +
+  labs(title = "Sequence of Actions Over Time", x = "Step", y = "Gold") +
+  theme(text = element_text(family = "Inter", colour = "#0C0C0C")
+          , plot.title = element_text(size = 14, face = "bold")
+          , plot.subtitle = element_text(size = 10)
+          , plot.caption = element_text(size = 8)
+          , axis.text = element_text(size = 8)
+          , axis.title = element_text(size = 10)
+          , legend.text = element_text(size = 8)
+          , legend.title = element_text(size = 10, face = "bold")
+          , strip.text = element_text(size = 8, face = "bold")
+          , legend.position = "top"
+          , legend.direction = "horizontal"
+          , legend.justification = "left"
+          , panel.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , plot.background = element_rect(fill = "#F8F8FF") # Set background color to Ghost White
+          , panel.grid.major = element_line(color = "#F0F0F0") # Set major grid lines to Light Gray
+          , panel.grid.minor = element_blank() # Remove minor grid lines
+          , strip.background = element_rect(fill = "#F8F8FF") # Set facet background color to Ghost White
+          , legend.background = element_rect(fill = "#F8F8FF", color = NA) # Set legend background color to Ghost White
+          , legend.key = element_blank() # Remove legend key
+    )
+
+
+```
+
+## **Visualize the Tech Tree as a Tree Diagram**
+
+Visualize the tech tree as a tree diagram using the **`DiagrammeR`** package.
+
+```{r tree, echo=FALSE, message=FALSE, warning=FALSE}
+library(DiagrammeR)
+# Create a node graph for the tech tree
+graph <- create_graph()
+
+# Add nodes to the graph
+for (i in seq_len(nrow(tech_tree))) {
+  node <- tech_tree$node[[i]]
+  graph <- add_node(graph, label = node$node_name, type = "tech_node")
+}
+
+# Add edges based on prerequisites
+for (i in seq_len(nrow(tech_tree))) {
+  node <- tech_tree$node[[i]]
+  if (!is.null(node$prerequisites)) {
+    for (prereq in unlist(node$prerequisites)) {
+      graph <- add_edge(graph, from = prereq, to = node$node_name)
+    }
+  }
+}
+
+# Render the graph
+render_graph(graph, layout = "tree", output = "visNetwork")
+```
+
+## **Conclusion**
+
+This example demonstrates how to use the free2playR framework to simulate a farming game feature. The player plants, grows, and harvests crops, manages resources, and upgrades farming equipment to improve efficiency.
