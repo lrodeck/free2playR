@@ -9,7 +9,7 @@ free2playR is an R package designed to simulate and analyze various game mechani
 
 ## Installation
 
-You can install MyGamePackage from GitHub using the `devtools` package:
+You can install free2playR from GitHub using the `devtools` package:
 
 ```r
 # Install devtools if you haven't already
