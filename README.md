@@ -1,7 +1,7 @@
 
 
 
-# MyGamePackage
+# free2playR
 
 MyGamePackage is an R package designed to simulate and analyze various game mechanics. It provides tools for defining and simulating user interactions with features such as tech trees, idle mechanics, quests, inventory systems, and more. The package is aimed at game developers, game analysts, and researchers who want to model and study player behavior and game dynamics.
 
@@ -16,7 +16,7 @@ You can install MyGamePackage from GitHub using the `devtools` package:
 install.packages("devtools")
 
 # Install MyGamePackage from GitHub
-devtools::install_github("YOUR_USERNAME/MyGamePackage")
+devtools::install_github("lrodeck/free2playR")
 
 
 ```
