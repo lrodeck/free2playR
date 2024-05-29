@@ -1,4 +1,4 @@
-![hex-free2playR](https://github.com/lrodeck/free2playR/assets/41971053/09689101-107f-41f9-90ae-3db26afcbedd)
+![hex-free2playR <img src="image.png" width="250"/>](https://github.com/lrodeck/free2playR/assets/41971053/09689101-107f-41f9-90ae-3db26afcbedd)
 
 # MyGamePackage
 
